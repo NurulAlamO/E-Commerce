@@ -52,19 +52,65 @@ const ProdctCatagori = async ()=>{
 ProdctCatagori();
 
 
+const showTranding = async(category = "", topRating = false)=>{
 
-// {
-//     "id": 1,
-//     "title": "Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops",
-//     "price": 109.95,
-//     "description": "Your perfect pack for everyday use and walks in the forest. Stash your laptop (up to 15 inches) in the padded sleeve, your everyday",
-//     "category": "men's clothing",
-//     "image": "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_t.png",
-//     "rating": {
-//         "rate": 3.9,
-//         "count": 120
-//     }
-// }
+    mangSppiner(true);
+    const url =`https://fakestoreapi.com/products`;
+    const res = await fetch(url);
+    const data = await res.json();
+    console.log(data)
+
+    let filtereds = category ? data.filter(p => p.category === category) : data;
+
+    if(topRating){
+        filtereds = filtereds.sort((a, b)=> b.rating.rate - a.rating.rate)
+        .slice(0, 3);
+    }
+
+    const trandigCard = document.getElementById("tranding-continer");
+    trandigCard.innerHTML="";
+
+    filtereds.forEach(product => {
+
+        // console.log(product.price);
+        
+        const div = document.createElement("div");
+        div.innerHTML = `
+            <div class="card bg-base-100 w-full shadow-sm
+                transition-transform duration-300 ease-in-out
+                hover:-translate-y-3 hover:shadow-xl">
+                <figure class="h-120">
+                    <img
+                    src="${product.image}"
+                    alt="Shoes" />
+                </figure>
+                <div class="card-body">
+                    <div class="flex justify-between items-center">
+                        <h4 class="badge badge-sm bg-slate-300 text-blue-700 font-semibold">${product.category}</h4>
+                        <div class="flex justify-center items-center gap-1">
+                            <i class="fa-solid fa-star text-yellow-300"></i>
+                            <div class="flex gap-1">
+                                <p>${product.rating.rate}</p>
+                                <p>(${product.rating.count})</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-base font-medium">${product.title}</p>
+                        <h2 class="text-xl font-bold">${product.price}</h2>
+                    </div>
+                    <div class="grid grid-cols-2 card-actions justify-between">
+                        <button onclick="showDetailsTranding(${product.id})" class="btn rounded-xl shadow-2xl px-9 gap-3"><i class="fa-solid fa-eye"></i> Details</button>
+                        <button class="btn btn-primary rounded-xl shadow-2xl px-9 gap-3"><i class="fa-solid fa-cart-shopping"></i> Add</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        trandigCard.append(div);
+    });
+    mangSppiner(false);
+}
+showTranding("", true);
 
 const prodectAll = async(category = "")=>{
 
@@ -72,7 +118,7 @@ const prodectAll = async(category = "")=>{
     const url =`https://fakestoreapi.com/products`;
     const res = await fetch(url);
     const data = await res.json();
-    // console.log(data)
+    console.log(data)
 
     const card = document.getElementById("card-container");
     card.innerHTML="";
@@ -110,7 +156,7 @@ const prodectAll = async(category = "")=>{
                         <h2 class="text-xl font-bold">${product.price}</h2>
                     </div>
                     <div class="grid grid-cols-2 card-actions justify-between">
-                        <button class="btn rounded-xl shadow-2xl px-9 gap-3"><i class="fa-solid fa-eye"></i> Details</button>
+                        <button onclick="showDetails(${product.id})" class="btn rounded-xl shadow-2xl px-9 gap-3"><i class="fa-solid fa-eye"></i> Details</button>
                         <button class="btn btn-primary rounded-xl shadow-2xl px-9 gap-3"><i class="fa-solid fa-cart-shopping"></i> Add</button>
                     </div>
                 </div>
@@ -120,6 +166,39 @@ const prodectAll = async(category = "")=>{
     });
     mangSppiner(false);
 }
+
+
+const showDetails = async(productId) => {
+    mangSppiner(true);
+    const res = await fetch(`https://fakestoreapi.com/products/${productId}`);
+    const product = await res.json();
+
+    const detailsCard = document.getElementById("detales_word");
+    detailsCard.innerHTML = `
+        <div class="">
+            <h2 class="text-2xl font-bold">Tittle: ${product.title}</h2>
+        </div>
+        <div class="space-y-1">
+            <h2 class="font-semibold text-base text-gray-600">Details: ${product.description}</h2>
+        </div>
+        <div>
+            <h2 class="text-2xl font-bold">Price: ${product.price}</h2>
+        </div>
+       <div class="flex items-center gap-1 text-2xl font-bold">
+             <i class="fa-solid fa-star text-yellow-300"></i>
+            <div class="flex gap-1">
+                <p class="">${product.rating.rate}</p>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 card-actions justify-between">
+            <button onclick="" class="btn rounded-xl shadow-2xl px-9 gap-3"><i class="fa-solid fa-bag-shopping"></i></i>Buy Now</button>
+            <button class="btn btn-primary rounded-xl shadow-2xl px-9 gap-3"><i class="fa-solid fa-cart-shopping"></i>Add to Cart</button>
+        </div>
+    `;
+    mangSppiner(false);
+    document.getElementById("detailes_container").showModal();
+}
+
 
 const removeNavActive = () =>{
     const removeBtn = document.querySelectorAll(".btn-product");
@@ -181,4 +260,3 @@ const home = () =>{
     document.getElementById("home-btn").classList.add("active-nav")
     document.getElementById("home-bt").classList.add("active-nav")
 }
-
